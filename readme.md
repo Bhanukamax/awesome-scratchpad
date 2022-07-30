@@ -18,12 +18,17 @@ Note: you have to require it form the correct place you cloned it to
 your `rc.lua` or you home directory `~`
 
 ```lua
+    -- Require the module
+    local scratchpad = require("awesome-scratchpad/scratchpad")
+
+    -- Put these some where you put you keybinding
     awful.key({ modkey,           }, "-",
-        scratch_pad.send_to_scratch,
+        scratchpad.send_to_scratch,
         {description = "Send to scratch pad", group = "Scratchpad"}),
     awful.key({ modkey,           }, "=",
-        function (c) scratch_pad.toggle_scratch(c) end,
+        function (c) scratchpad.toggle_scratch(c) end,
         {description = "Toggle Scratch pad", group = "Scratchpad"}),
+
 
 ```
 
