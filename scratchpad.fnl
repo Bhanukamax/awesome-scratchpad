@@ -80,10 +80,13 @@
           (set c-client.floating true)
           ;; Raise & Focus the scrach pad client
           (c-client:raise)
+          (set c-client.skip_taskbar false)
           (set c-client.minimized false)
           (set client.focus c-client))
         ;; Minimize inactive scratch buffers
-        (set c-client.minimized true)
+        (do
+          (set c-client.skip_taskbar true)
+          (set c-client.minimized true))
         ))))
 
 (fn toggle-scratch [c]

@@ -46,9 +46,11 @@ local function show_scratch(c)
       c_client.ontop = true
       c_client.floating = true
       c_client:raise()
+      c_client.skip_taskbar = false
       c_client.minimized = false
       client.focus = c_client
     else
+      c_client.skip_taskbar = true
       c_client.minimized = true
     end
   end
