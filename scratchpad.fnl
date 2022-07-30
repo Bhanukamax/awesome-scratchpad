@@ -102,6 +102,6 @@
 
 (set M.send_to_scratch send-to-scratch)
 
-(set M.show_scratch toggle-scratch)
+(set M.toggle_scratch toggle-scratch)
 
 M

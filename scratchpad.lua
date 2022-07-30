@@ -71,5 +71,5 @@ local function toggle_scratch(c)
   end
 end
 M.send_to_scratch = send_to_scratch
-M.show_scratch = toggle_scratch
+M.toggle_scratch = toggle_scratch
 return M
