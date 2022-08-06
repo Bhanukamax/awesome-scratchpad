@@ -43,6 +43,7 @@ local function send_to_scratch(c)
       end
     end
   end
+  stag:clients(to_keep)
   return M.alert({msg = "to-keep", ["to-keep"] = to_keep, sent = buf})
 end
 local function old_2fsend_to_scratch(c)

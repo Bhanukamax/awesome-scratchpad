@@ -52,15 +52,14 @@
   ;; get the screen tag clients
   (local screen (awful.screen.focused))
   (local stag screen.selected_tag)
-  ;;  (M.alert ctag)
-  ;;  (local stag (. screen.tags ctag))
+
+
   (local screen-clients (stag:clients))
   (local to-keep [])
-  ;; check them
+
   (each [key c (pairs screen-clients)]
     ;; send the focus clinet to scrachpad
     ;; check if the cliet is already in it before sending
-
     ;; if focused
     (if (= client.focus c)
 
@@ -68,18 +67,16 @@
         (when (= (util.table-has buf c) false)
           (do
             (table.insert buf c)
-            (M.alert "sent to scrattch")
-            ;; remomve the sent client from the current tag
-            ))
+            (M.alert "sent to scrattch")))
 
+        ;; Collect the clients to keep
         (do
           (when (= (util.table-has buf c) false)
-            (table.insert to-keep c)
-            )
-          )
+            (table.insert to-keep c)))))
 
-        ))
-  ;; when not sending to scratch collect them and set as the clients for the current tag
+  ;; Set the clientsforthe curreent tags from to-keep table
+  (stag:clients to-keep)
+
   (M.alert {:msg :to-keep :to-keep to-keep :sent buf})
   )
 
