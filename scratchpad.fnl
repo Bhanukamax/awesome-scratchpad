@@ -11,6 +11,13 @@
 
 ;;(local util (require :util))
 
+(fn fn/filter [arr cb]
+  (local new-arr [])
+  (each [key value (pairs arr)]
+    (when (= (cb value) true)
+      (table.insert new-arr value)))
+  new-arr)
+
 (local awful (require :awful))
 (local naughty (require :naughty))
 ;; Inspect copied from neovim
@@ -59,6 +66,7 @@
 
 ;;-- This currently sends to tag 9
 ;; need to see if can implement scratch pad without using a tag
+
 (fn send-to-scratch [c]
 
   ;; get the screen tag clients
@@ -69,28 +77,27 @@
   (local screen-clients (stag:clients))
   (local to-keep [])
 
-  (each [key c (pairs screen-clients)]
+  (each [key cc (pairs screen-clients)]
     ;; send the focus clinet to scrachpad
     ;; check if the cliet is already in it before sending
     ;; if focused
-    (if (= client.focus c)
+    (if (= client.focus cc)
 
         ;; if not already in the scratch buffer
-        (when (= (util.table-has buf c) false)
+        (when (= (util.table-has buf cc) false)
           (do
-            (table.insert buf c)
+            (table.insert buf cc)
             (M.alert "sent to scrattch")))
 
         ;; Collect the clients to keep
         (do
-          (when (= (util.table-has buf c) false)
-            (table.insert to-keep c)))))
+          (when (= (util.table-has buf cc) false)
+            (table.insert to-keep cc)))))
 
   ;; Set the clientsforthe curreent tags from to-keep table
   (stag:clients to-keep)
 
-  (M.alert {:msg :to-keep :to-keep to-keep :sent buf})
-  )
+  (M.alert {:msg :to-keep :to-keep to-keep :sent buf}) )
 
 ;; Toggles on and off the scratch pad tag (tag 9)
 ;; Reason Unknown Caveatts:
@@ -100,6 +107,17 @@
 (var is-visible false)
 
 (var last-visible-idx 0)
+(var visible-scratch-client {})
+(var current-scratch-idx 0)
+
+(fn set-client-props [c]
+  (do
+    (set c.ontop true)
+    (set c.floating true)
+    (set c.height height)
+    (set c.width width)
+    (set c.x x)
+    (set c.y y)))
 
 (fn show-scratch [c]
   (local screen (awful.screen.focused))
@@ -107,25 +125,28 @@
 
   (local buf-count (length buf))
   (local sclients (get-screeen-clietns))
-  (M.alert {:msg :showing :clients sclients})
-  (var current-scratch-idx 0)
+
+
   (when (> buf-count 0)
     (set current-scratch-idx
-         (% (+ last-visible-idx 1) buf-count)))
+         (+ 1
+            (% (+ last-visible-idx 1) buf-count))))
   ;; get the current scratch client
+  (M.alert {
+            :curretn-idx current-scratch-idx
+            :msg :showing :clients sclients :scratch buf})
   (local cs (. buf current-scratch-idx))
-  (table.insert sqclients cs)
+  (table.insert sclients cs)
+  (set visible-scratch-client cs)
 
   (stag:clients sclients)
+  (set-client-props cs)
 
 
   ;; Show scratch pad
   ;; get all the clietns of the current tag
   ;; add the first cient from the scratchpad to clietn tag
   ;; - reset the tags for ctag with the new clietn included
-
-
-
   (set is-visible true)
   (set last-visible-idx current-scratch-idx)
   )
@@ -133,12 +154,23 @@
 (fn hide-scratch []
     ;; Hide scratch pad
   ;; Reset the clients without the client from the scratch pad
+  (local screen (awful.screen.focused))
+  (local stag screen.selected_tag)
+
+  (local sclients (get-screeen-clietns))
+
+  (local non-scratch-clients
+         (fn/filter
+          sclients
+          (fn [i]
+            (~= i visible-scratch-client))))
+
+  (stag:clients non-scratch-clients)
 
   (M.alert "hiding scratchs!!")
   (set is-visible false))
 
 (fn toggle-scratch [c]
-  (M.alert "new toggle scratch!!")
   (if (= is-visible false)
       (show-scratch c)
       (hide-scratch c)))

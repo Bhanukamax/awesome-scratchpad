@@ -1,3 +1,13 @@
+local function fn_2ffilter(arr, cb)
+  local new_arr = {}
+  for key, value in pairs(arr) do
+    if (cb(value) == true) then
+      table.insert(new_arr, value)
+    else
+    end
+  end
+  return new_arr
+end
 local awful = require("awful")
 local naughty = require("naughty")
 local inspect = require("inspect")
@@ -7,7 +17,7 @@ local active_sp_idx = 0
 local is_sp_visible = false
 local util = {}
 local table_has
-local function _1_(tabel, pin)
+local function _2_(tabel, pin)
   local found = false
   for key, c in pairs(tabel) do
     if (c == pin) then
@@ -17,12 +27,12 @@ local function _1_(tabel, pin)
   end
   return found
 end
-table_has = _1_
+table_has = _2_
 util["table-has"] = table_has
-local function _3_(tbl)
+local function _4_(tbl)
   return naughty.notify({text = inspect({tbl = tbl})})
 end
-M.alert = _3_
+M.alert = _4_
 local buf = {}
 local function get_screeen_clietns()
   local screen0 = awful.screen.focused()
@@ -39,16 +49,16 @@ local function send_to_scratch(c)
   local stag = screen0.selected_tag
   local screen_clients = stag:clients()
   local to_keep = {}
-  for key, c0 in pairs(screen_clients) do
-    if (client.focus == c0) then
-      if (util["table-has"](buf, c0) == false) then
-        table.insert(buf, c0)
+  for key, cc in pairs(screen_clients) do
+    if (client.focus == cc) then
+      if (util["table-has"](buf, cc) == false) then
+        table.insert(buf, cc)
         M.alert("sent to scrattch")
       else
       end
     else
-      if (util["table-has"](buf, c0) == false) then
-        table.insert(to_keep, c0)
+      if (util["table-has"](buf, cc) == false) then
+        table.insert(to_keep, cc)
       else
       end
     end
@@ -58,31 +68,51 @@ local function send_to_scratch(c)
 end
 local is_visible = false
 local last_visible_idx = 0
+local visible_scratch_client = {}
+local current_scratch_idx = 0
+local function set_client_props(c)
+  c.ontop = true
+  c.floating = true
+  c.height = height
+  c.width = width
+  c.x = x
+  c.y = y
+  return nil
+end
 local function show_scratch(c)
   local screen0 = awful.screen.focused()
   local stag = screen0.selected_tag
   local buf_count = #buf
-  local sclietns = get_screeen_clietns()
-  M.alert({msg = "showing", clients = sclietns})
-  local current_scratch_idx = 0
+  local sclients = get_screeen_clietns()
   if (buf_count > 0) then
-    current_scratch_idx = ((last_visible_idx + 1) % buf_count)
+    current_scratch_idx = (1 + ((last_visible_idx + 1) % buf_count))
   else
   end
+  M.alert({["curretn-idx"] = current_scratch_idx, msg = "showing", clients = sclients, scratch = buf})
   local cs = buf[current_scratch_idx]
-  table.insert(sclietns, cs)
-  stag:clients(sclietns)
+  table.insert(sclients, cs)
+  visible_scratch_client = cs
+  stag:clients(sclients)
+  set_client_props(cs)
   is_visible = true
   last_visible_idx = current_scratch_idx
   return nil
 end
 local function hide_scratch()
+  local screen0 = awful.screen.focused()
+  local stag = screen0.selected_tag
+  local sclients = get_screeen_clietns()
+  local non_scratch_clients
+  local function _9_(i)
+    return (i ~= visible_scratch_client)
+  end
+  non_scratch_clients = fn_2ffilter(sclients, _9_)
+  stag:clients(non_scratch_clients)
   M.alert("hiding scratchs!!")
   is_visible = false
   return nil
 end
 local function toggle_scratch(c)
-  M.alert("new toggle scratch!!")
   if (is_visible == false) then
     return show_scratch(c)
   else
