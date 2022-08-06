@@ -5,11 +5,48 @@ local screen = awful.screen.focused()
 local M = {}
 local active_sp_idx = 0
 local is_sp_visible = false
-local function _1_(tbl)
+local util = {}
+local table_has
+local function _1_(tabel, pin)
+  local found = false
+  for key, c in pairs(tabel) do
+    if (c == pin) then
+      found = true
+    else
+    end
+  end
+  return found
+end
+table_has = _1_
+util["table-has"] = table_has
+local function _3_(tbl)
   return naughty.notify({text = inspect({tbl = tbl})})
 end
-M.alert = _1_
+M.alert = _3_
+local buf = {}
 local function send_to_scratch(c)
+  local screen0 = awful.screen.focused()
+  local stag = screen0.selected_tag
+  local screen_clients = stag:clients()
+  local to_keep = {}
+  for key, c0 in pairs(screen_clients) do
+    if (client.focus == c0) then
+      if (util["table-has"](buf, c0) == false) then
+        table.insert(buf, c0)
+        M.alert("sent to scrattch")
+      else
+      end
+    else
+      if (util["table-has"](buf, c0) == false) then
+        table.insert(to_keep, c0)
+      else
+      end
+    end
+  end
+  return M.alert({msg = "to-keep", ["to-keep"] = to_keep, sent = buf})
+end
+local function old_2fsend_to_scratch(c)
+  scratchpad.insert(c)
   local screen0 = awful.screen.focused()
   local ctag = (screen0.tags)[9]
   local workarea = screen0.workarea
