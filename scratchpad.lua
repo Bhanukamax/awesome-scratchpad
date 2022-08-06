@@ -28,7 +28,11 @@ local function get_screeen_clietns()
   local screen0 = awful.screen.focused()
   local stag = screen0.selected_tag
   local screen_clients = stag:clients()
-  return nil
+  return screen_clients
+end
+local function get_current_tag()
+  local screen0 = awful.screen.focused()
+  return screen0.selected_tag()
 end
 local function send_to_scratch(c)
   local screen0 = awful.screen.focused()
@@ -54,17 +58,23 @@ local function send_to_scratch(c)
 end
 local is_visible = false
 local last_visible_idx = 0
-local function show_scratch()
+local function show_scratch(c)
+  local screen0 = awful.screen.focused()
+  local stag = screen0.selected_tag
   local buf_count = #buf
   local sclietns = get_screeen_clietns()
   M.alert({msg = "showing", clients = sclietns})
-  is_visible = true
+  local current_scratch_idx = 0
   if (buf_count > 0) then
-    last_visible_idx = ((last_visible_idx + 1) % buf_count)
-    return nil
+    current_scratch_idx = ((last_visible_idx + 1) % buf_count)
   else
-    return nil
   end
+  local cs = buf[current_scratch_idx]
+  table.insert(sclietns, cs)
+  stag:clients(sclietns)
+  is_visible = true
+  last_visible_idx = current_scratch_idx
+  return nil
 end
 local function hide_scratch()
   M.alert("hiding scratchs!!")
