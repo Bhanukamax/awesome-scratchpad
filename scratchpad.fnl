@@ -7,11 +7,6 @@
       (table.insert new-arr value)))
   new-arr)
 
-
-
-
-
-
 (local awful (require :awful))
 (local naughty (require :naughty))
 
@@ -56,156 +51,163 @@
 
 (var buf [])
 
-(fn get-screeen-clients []
-  (local screen (awful.screen.focused))
-  (local stag screen.selected_tag)
-  (local screen-clients (stag:clients))
-  screen-clients)
+(set M.get-screeen-clients
+     (fn  []
+       (local screen (awful.screen.focused))
+       (local stag screen.selected_tag)
+       (local screen-clients (stag:clients))
+       screen-clients))
+
+(set M.remove-scratch-props
+     (fn [c]
+       (set c.floating false)
+       (set c.ontop false)))
+
+(set M.set-client-props
+     (fn [c]
+       (local screen (awful.screen.focused))
+       (local w screen.workarea)
+
+       (do
+         (set c.ontop true)
+         (set c.floating true)
+         (set c.height (/  w.height 2))
+         (set c.width (/ w.width 2))
+         (set c.x (+ (/ w.width 10) w.x))
+         (set c.y (+ (/ w.height 10)  w.y)))))
 
 
-(fn remove-scratch-props [c]
-  (set c.floating false)
-  (set c.ontop false))
+(set M.send-to-scratch
+     (fn [c]
 
-(fn set-client-props [c]
-  (local screen (awful.screen.focused))
-  (local w screen.workarea)
-
-  (do
-    (set c.ontop true)
-    (set c.floating true)
-    (set c.height (/  w.height 2))
-    (set c.width (/ w.width 2))
-    (set c.x (+ (/ w.width 10) w.x))
-    (set c.y (+ (/ w.height 10)  w.y))))
+       ;; get the screen tag clients
+       (local screen (awful.screen.focused))
+       (local stag screen.selected_tag)
 
 
-(fn send-to-scratch [c]
+       (local screen-clients (stag:clients))
+       (local to-keep [])
 
-  ;; get the screen tag clients
-  (local screen (awful.screen.focused))
-  (local stag screen.selected_tag)
+       (each [key cc (pairs screen-clients)]
+         ;; send the focus clinet to scrachpad
+         ;; check if the cliet is already in it before sending
+         ;; if focused
+         (if (= client.focus cc)
 
+             ;; if not already in the scratch buffer
+             (when (= (util.table-has buf cc) false)
+               (do
+                 (table.insert buf cc)
+                 (M.set-client-props cc)
+                 (M.alert "sent to scrattch")))
 
-  (local screen-clients (stag:clients))
-  (local to-keep [])
+             ;; Collect the clients to keep
+             (do
+               (when (= (util.table-has buf cc) false)
+                 (table.insert to-keep cc)))))
 
-  (each [key cc (pairs screen-clients)]
-    ;; send the focus clinet to scrachpad
-    ;; check if the cliet is already in it before sending
-    ;; if focused
-    (if (= client.focus cc)
+       ;; Set the clientsforthe curreent tags from to-keep table
+       (stag:clients to-keep)))
 
-        ;; if not already in the scratch buffer
-        (when (= (util.table-has buf cc) false)
-          (do
-            (table.insert buf cc)
-            (set-client-props cc)
-            (M.alert "sent to scrattch")))
+(set M.remove-client-from-scratch
+     (fn  [c]
+       (local new-buf (fn/filter buf (fn [i] (~= i c))))
+       (set buf new-buf)
+       (M.remove-scratch-props c)
+       (M.show-scratch)
+       (M.hide-scratch)
+       ))
 
-        ;; Collect the clients to keep
-        (do
-          (when (= (util.table-has buf cc) false)
-            (table.insert to-keep cc)))))
+(set M.toggle-send
+     (fn [c]
+       (local buf-has-client (table-has buf c))
+       (if (= buf-has-client true)
+           (M.remove-client-from-scratch c)
+           (M.send-to-scratch c))))
 
-  ;; Set the clientsforthe curreent tags from to-keep table
-  (stag:clients to-keep))
+(set M.sanitize-client-props
+     (fn [c]
+       (local screen (awful.screen.focused))
+       (local w screen.workarea)
+       (set c.ontop true)
+       (set c.focused true)
+       (set c.floating true)
 
-(fn remove-client-from-scratch [c]
-  (local new-buf (fn/filter buf (fn [i] (~= i c))))
-  (set buf new-buf)
-  (remove-scratch-props c)
+       (when
+           (or (< c.y w.y)
+               (> c.y (+ w.y w.height))
+               (> (+ c.x c.width) (+ w.y w.width))
+               (> (+ c.y c.height) (+ w.y w.height))
+               )
+         (do
+           (set c.height (/  w.height 2))
+           (set c.width (/ w.width 2))
+           (set c.x (+ (/ w.width 10) w.x))
+           (set c.y (+ (/ w.height 10)  w.y))))))
 
-  )
+(set M.show-scratch
+     (fn []
+       (local screen (awful.screen.focused))
 
-(fn toggle-send [c]
-  (local buf-has-client (table-has buf c))
-  (if (= buf-has-client true)
-      (remove-client-from-scratch c)
-      (send-to-scratch c)))
+       (local stag screen.selected_tag)
 
-(fn sanitize-client-props [c]
-  (local screen (awful.screen.focused))
-  (local w screen.workarea)
-  (set c.ontop true)
-  (set c.focused true)
-  (set c.floating true)
+       (local buf-count (length buf))
+       (local sclients (M.get-screeen-clients))
 
-  (when
-      (or (< c.y w.y)
-          (> c.y (+ w.y w.height))
-          (> (+ c.x c.width) (+ w.y w.width))
-          (> (+ c.y c.height) (+ w.y w.height))
-          )
-    (do
-      (set c.height (/  w.height 2))
-      (set c.width (/ w.width 2))
-      (set c.x (+ (/ w.width 10) w.x))
-      (set c.y (+ (/ w.height 10)  w.y)))))
+       (local cs (. buf (+ current-scratch-idx 1)))
+       (table.insert sclients cs)
+       (set visible-scratch-client cs)
+       (stag:clients sclients)
 
+       (set is-visible true)
+       (M.sanitize-client-props cs)
+       (set client.focus cs)))
 
-(fn show-scratch []
+(set M.hide-scratch
+     (fn []
 
+       (local screen (awful.screen.focused))
+       (local stag screen.selected_tag)
 
-  (local screen (awful.screen.focused))
+       (local sclients (M.get-screeen-clients))
 
-  (local stag screen.selected_tag)
+       (local non-scratch-clients
+              (fn/filter
+               sclients
+               (fn [i]
+                 (~= i visible-scratch-client))))
 
-  (local buf-count (length buf))
-  (local sclients (get-screeen-clients))
+       (stag:clients non-scratch-clients)
 
-  (local cs (. buf (+ current-scratch-idx 1)))
-  (table.insert sclients cs)
-  (set visible-scratch-client cs)
-  (stag:clients sclients)
+       (set is-visible false)))
 
-  (set is-visible true)
-  (sanitize-client-props cs)
-  (set client.focus cs))
-
-(fn hide-scratch []
-
-  (local screen (awful.screen.focused))
-  (local stag screen.selected_tag)
-
-  (local sclients (get-screeen-clients))
-
-  (local non-scratch-clients
-         (fn/filter
-          sclients
-          (fn [i]
-            (~= i visible-scratch-client))))
-
-  (stag:clients non-scratch-clients)
-
-  (set is-visible false))
-
-(fn cycle []
-  (if (= is-visible false)
-      (show-scratch)
-      (do
-        (hide-scratch)
-        (local buf-count (length buf))
-        (local new-idx
-               (% (+ current-scratch-idx 1) buf-count))
-        (set current-scratch-idx new-idx)
-        (show-scratch)
-        ;;        (set-client-props visible-scratch-client)
-        (sanitize-client-props visible-scratch-client)
-        (M.alert "show shwo next"))))
+(set M.cycle
+     (fn []
+       (if (= is-visible false)
+           (M.show-scratch)
+           (do
+             (M.hide-scratch)
+             (local buf-count (length buf))
+             (local new-idx
+                    (% (+ current-scratch-idx 1) buf-count))
+             (set current-scratch-idx new-idx)
+             (M.show-scratch)
+             ;;        (M.set-client-props visible-scratch-client)
+             (M.sanitize-client-props visible-scratch-client)
+             (M.alert "show shwo next")))))
 
 ;; toggle last active scratch pad
-(fn toggle-scratch []
-  (when (> (length buf) 0)
-    (if (= is-visible false)
-        (show-scratch)
-        (hide-scratch))))
+(set M.toggle-scratch
+     (fn []
+       (when (> (length buf) 0)
+         (if (= is-visible false)
+             (M.show-scratch)
+             (M.hide-scratch)))))
 
-(set M.send_to_scratch send-to-scratch)
+(set M.send_to_scratch M.send-to-scratch)
 
 
-(set M.toggle toggle-scratch)
-(set M.cycle cycle)
-(set M.toggle_send toggle-send)
+(set M.toggle M.toggle-scratch)
+(set M.toggle_send M.toggle-send)
 
 M
