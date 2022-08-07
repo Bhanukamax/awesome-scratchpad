@@ -22,21 +22,17 @@ your `rc.lua` or you home directory `~`
     local scratchpad = require("awesome-scratchpad/scratchpad")
 
     -- Put these some where you put you keybinding
-    awful.key({ modkey,           }, "-",
-        scratchpad.send_to_scratch,
+    awful.key({ modkey,           }, "-", scratch_pad.toggle_send,
         {description = "Send to scratch pad", group = "Scratchpad"}),
-    awful.key({ modkey,           }, "=",
-        function (c) scratchpad.toggle_scratch(c) end,
+
+    awful.key({ modkey,           }, "=", scratch_pad.toggle,
         {description = "Toggle Scratch pad", group = "Scratchpad"}),
+
+    awful.key({ modkey, "Control" }, "=", scratch_pad.cycle,
+        {description = "Cycle Scratch pad", group = "Scratchpad"})
 
 
 ```
-
-## Caveats
-
-Current implementation uses tag 9 as the scratch workspace, So
-whatever you push to the tag 9 manually will also toggle on and off
-when toggling scratch pad
 
 ## Why build this
 
