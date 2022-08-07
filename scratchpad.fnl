@@ -1,17 +1,4 @@
 ;; SCRATCH PAD
-;; This is now usable
-
-;; To be tested and implement
-;; - Multi monitor scratch pads
-;; - Remove from scratch pad
-
-;; TODO:
-;; - Fix about limitations
-;; - Seperate this code and publish in a github repo
-
-;;(local util (require :util))
-
-
 
 (fn fn/filter [arr cb]
   (local new-arr [])
