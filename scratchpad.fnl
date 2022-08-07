@@ -11,6 +11,8 @@
 
 ;;(local util (require :util))
 
+
+
 (fn fn/filter [arr cb]
   (local new-arr [])
   (each [key value (pairs arr)]
@@ -22,7 +24,7 @@
 (local naughty (require :naughty))
 ;; Inspect copied from neovim
 (local inspect (require :inspect))
-(local screen (awful.screen.focused))
+;;(local screen (awful.screen.focused))
 
 (local M {})
 
@@ -41,6 +43,13 @@
              (set found true))
            ) found))
 
+(fn log [msg tbl]
+  (local file (io.open "bmax-sp-log" "w+"))
+  (file:write (inspect {:msg msg :tbl tbl}))
+  (io.close file)
+  )
+
+(set util.log log)
 
 (set util.table-has table-has)
 
@@ -111,16 +120,23 @@
 (var current-scratch-idx 0)
 
 (fn set-client-props [c]
+  (local screen (awful.screen.focused))
+  (local w screen.workarea)
+  (M.alert {:msg "workarea" :w w})
   (do
     (set c.ontop true)
     (set c.floating true)
-    (set c.height height)
-    (set c.width width)
-    (set c.x x)
-    (set c.y y)))
+    (set c.height (/  w.height 2))
+    (set c.width (/ w.width 2))
+    (set c.x (+ (/ w.width 10) w.x))
+    (set c.y (+ (/ w.height 10)  w.y))))
 
 (fn show-scratch []
+
+
   (local screen (awful.screen.focused))
+  (M.alert screen)
+
   (local stag screen.selected_tag)
 
   (local buf-count (length buf))
@@ -175,9 +191,21 @@
 
 (fn toggle-scratch []
   (M.alert "calling toggle scratch")
-  (if (= is-visible false)
-      (show-scratch)
-      (hide-scratch)))
+  (log "calling toggle" {})
+  (awful.screen.connect_for_each_screen
+   (fn [s]
+     (log "screen" {:s s :attr s.idx})))
+
+
+;;  (M.alert {:msg :screens :s awful.screen})
+
+  ;; (each [key value (pairs awful.screen)]
+  ;;   (M.alert {:msg "showing screens" :value value :key key}))
+
+
+
+  (if (= is-visible false) (show-scratch) (hide-scratch))
+  )
 
 (set M.send_to_scratch send-to-scratch)
 

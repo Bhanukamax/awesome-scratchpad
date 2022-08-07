@@ -11,7 +11,6 @@ end
 local awful = require("awful")
 local naughty = require("naughty")
 local inspect = require("inspect")
-local screen = awful.screen.focused()
 local M = {}
 local active_sp_idx = 0
 local is_sp_visible = false
@@ -28,6 +27,12 @@ local function _2_(tabel, pin)
   return found
 end
 table_has = _2_
+local function log(msg, tbl)
+  local file = io.open("bmax-sp-log", "w+")
+  file:write(inspect({msg = msg, tbl = tbl}))
+  return io.close(file)
+end
+util.log = log
 util["table-has"] = table_has
 local function _4_(tbl)
   return naughty.notify({text = inspect({tbl = tbl})})
@@ -35,18 +40,18 @@ end
 M.alert = _4_
 local buf = {}
 local function get_screeen_clietns()
-  local screen0 = awful.screen.focused()
-  local stag = screen0.selected_tag
+  local screen = awful.screen.focused()
+  local stag = screen.selected_tag
   local screen_clients = stag:clients()
   return screen_clients
 end
 local function get_current_tag()
-  local screen0 = awful.screen.focused()
-  return screen0.selected_tag()
+  local screen = awful.screen.focused()
+  return screen.selected_tag()
 end
 local function send_to_scratch(c)
-  local screen0 = awful.screen.focused()
-  local stag = screen0.selected_tag
+  local screen = awful.screen.focused()
+  local stag = screen.selected_tag
   local screen_clients = stag:clients()
   local to_keep = {}
   for key, cc in pairs(screen_clients) do
@@ -71,17 +76,21 @@ local last_visible_idx = 0
 local visible_scratch_client = {}
 local current_scratch_idx = 0
 local function set_client_props(c)
+  local screen = awful.screen.focused()
+  local w = screen.workarea
+  M.alert({msg = "workarea", w = w})
   c.ontop = true
   c.floating = true
-  c.height = height
-  c.width = width
-  c.x = x
-  c.y = y
+  c.height = (w.height / 2)
+  c.width = (w.width / 2)
+  c.x = ((w.width / 10) + w.x)
+  c.y = ((w.height / 10) + w.y)
   return nil
 end
 local function show_scratch()
-  local screen0 = awful.screen.focused()
-  local stag = screen0.selected_tag
+  local screen = awful.screen.focused()
+  M.alert(screen)
+  local stag = screen.selected_tag
   local buf_count = #buf
   local sclients = get_screeen_clietns()
   if (buf_count > 0) then
@@ -99,8 +108,8 @@ local function show_scratch()
   return nil
 end
 local function hide_scratch()
-  local screen0 = awful.screen.focused()
-  local stag = screen0.selected_tag
+  local screen = awful.screen.focused()
+  local stag = screen.selected_tag
   local sclients = get_screeen_clietns()
   local non_scratch_clients
   local function _9_(i)
@@ -114,6 +123,11 @@ local function hide_scratch()
 end
 local function toggle_scratch()
   M.alert("calling toggle scratch")
+  log("calling toggle", {})
+  local function _10_(s)
+    return log("screen", {s = s, attr = s.idx})
+  end
+  awful.screen.connect_for_each_screen(_10_)
   if (is_visible == false) then
     return show_scratch()
   else
