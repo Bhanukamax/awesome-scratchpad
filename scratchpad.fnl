@@ -163,6 +163,7 @@
 
   (set is-visible true)
   (sanitize-client-props cs)
+  (set client.focus cs)
 
   )
 

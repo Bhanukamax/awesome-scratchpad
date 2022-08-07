@@ -111,7 +111,9 @@ local function show_scratch()
   visible_scratch_client = cs
   stag:clients(sclients)
   is_visible = true
-  return sanitize_client_props(cs)
+  sanitize_client_props(cs)
+  client.focus = cs
+  return nil
 end
 local function hide_scratch()
   local screen = awful.screen.focused()
