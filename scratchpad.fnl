@@ -96,14 +96,7 @@
             (table.insert to-keep cc)))))
 
   ;; Set the clientsforthe curreent tags from to-keep table
-  (stag:clients to-keep)
-
-  )
-
-;; Toggles on and off the scratch pad tag (tag 9)
-;; Reason Unknown Caveatts:
-;; - This will only work if the keybinding is set in the group where the spawn keybinding are set
-
+  (stag:clients to-keep))
 
 (var is-visible false)
 
