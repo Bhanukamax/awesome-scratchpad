@@ -48,7 +48,7 @@
 
 (var buf [])
 
-(fn get-screeen-clietns []
+(fn get-screeen-clients []
   (local screen (awful.screen.focused))
   (local stag screen.selected_tag)
   (local screen-clients (stag:clients))
@@ -140,7 +140,7 @@
   (local stag screen.selected_tag)
 
   (local buf-count (length buf))
-  (local sclients (get-screeen-clietns))
+  (local sclients (get-screeen-clients))
 
   (local cs (. buf (+ current-scratch-idx 1)))
   (table.insert sclients cs)
@@ -156,7 +156,7 @@
   (local screen (awful.screen.focused))
   (local stag screen.selected_tag)
 
-  (local sclients (get-screeen-clietns))
+  (local sclients (get-screeen-clients))
 
   (local non-scratch-clients
          (fn/filter
@@ -165,6 +165,7 @@
             (~= i visible-scratch-client))))
 
   (stag:clients non-scratch-clients)
+
   (set is-visible false))
 
 (fn cycle []

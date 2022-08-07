@@ -39,7 +39,7 @@ local function _4_(tbl)
 end
 M.alert = _4_
 local buf = {}
-local function get_screeen_clietns()
+local function get_screeen_clients()
   local screen = awful.screen.focused()
   local stag = screen.selected_tag
   local screen_clients = stag:clients()
@@ -101,7 +101,7 @@ local function show_scratch()
   local screen = awful.screen.focused()
   local stag = screen.selected_tag
   local buf_count = #buf
-  local sclients = get_screeen_clietns()
+  local sclients = get_screeen_clients()
   local cs = buf[(current_scratch_idx + 1)]
   table.insert(sclients, cs)
   visible_scratch_client = cs
@@ -114,7 +114,7 @@ end
 local function hide_scratch()
   local screen = awful.screen.focused()
   local stag = screen.selected_tag
-  local sclients = get_screeen_clietns()
+  local sclients = get_screeen_clients()
   local non_scratch_clients
   local function _9_(i)
     return (i ~= visible_scratch_client)
