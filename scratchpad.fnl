@@ -129,13 +129,16 @@
 
   (when (> buf-count 0)
     (set current-scratch-idx
-         (+ 1
-            (% (+ last-visible-idx 1) buf-count))))
+         (% (+ last-visible-idx 1) buf-count)))
   ;; get the current scratch client
   (M.alert {
             :curretn-idx current-scratch-idx
-            :msg :showing :clients sclients :scratch buf})
-  (local cs (. buf current-scratch-idx))
+            :msg :showing
+            :clients sclients
+            :scratch buf
+            :visible visible-scratch-client
+            })
+  (local cs (. buf (+ current-scratch-idx 1)))
   (table.insert sclients cs)
   (set visible-scratch-client cs)
 

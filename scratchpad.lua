@@ -85,11 +85,11 @@ local function show_scratch(c)
   local buf_count = #buf
   local sclients = get_screeen_clietns()
   if (buf_count > 0) then
-    current_scratch_idx = (1 + ((last_visible_idx + 1) % buf_count))
+    current_scratch_idx = ((last_visible_idx + 1) % buf_count)
   else
   end
-  M.alert({["curretn-idx"] = current_scratch_idx, msg = "showing", clients = sclients, scratch = buf})
-  local cs = buf[current_scratch_idx]
+  M.alert({["curretn-idx"] = current_scratch_idx, msg = "showing", clients = sclients, scratch = buf, visible = visible_scratch_client})
+  local cs = buf[(current_scratch_idx + 1)]
   table.insert(sclients, cs)
   visible_scratch_client = cs
   stag:clients(sclients)
