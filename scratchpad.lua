@@ -88,9 +88,12 @@ local current_scratch_idx = 0
 local function sanitize_client_props(c)
   local screen = awful.screen.focused()
   local w = screen.workarea
-  if ((c.y < w.y) or (c.y > (w.y + w.height))) then
-    c.ontop = true
-    c.floating = true
+  c.ontop = true
+  c.focused = true
+  c.floating = true
+  if ((c.y < w.y) or (c.y > (w.y + w.height)) or ((c.x + c.width) > (w.y + w.width)) or ((c.y + c.height) > (w.y + w.height))) then
+    c.height = (w.height / 2)
+    c.width = (w.width / 2)
     c.x = ((w.width / 10) + w.x)
     c.y = ((w.height / 10) + w.y)
     return nil

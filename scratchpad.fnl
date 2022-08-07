@@ -76,8 +76,6 @@
 ;;-- This currently sends to tag 9
 ;; need to see if can implement scratch pad without using a tag
 
-
-
 (fn set-client-props [c]
   (local screen (awful.screen.focused))
   (local w screen.workarea)
@@ -89,7 +87,6 @@
     (set c.width (/ w.width 2))
     (set c.x (+ (/ w.width 10) w.x))
     (set c.y (+ (/ w.height 10)  w.y))))
-
 
 
 (fn send-to-scratch [c]
@@ -139,19 +136,22 @@
 (fn sanitize-client-props [c]
   (local screen (awful.screen.focused))
   (local w screen.workarea)
+      (set c.ontop true)
+      (set c.focused true)
+      (set c.floating true)
 
   (when
       (or (< c.y w.y)
           (> c.y (+ w.y w.height))
+          (> (+ c.x c.width) (+ w.y w.width))
+          (> (+ c.y c.height) (+ w.y w.height))
           )
-
     (do
-      (set c.ontop true)
-      (set c.floating true)
-    ;;  (set c.height (/  w.height 2))
-     ;; (set c.width (/ w.width 2))
+      (set c.height (/  w.height 2))
+      (set c.width (/ w.width 2))
       (set c.x (+ (/ w.width 10) w.x))
-      (set c.y (+ (/ w.height 10)  w.y)))))
+      (set c.y (+ (/ w.height 10)  w.y))))
+  )
 
 
 
