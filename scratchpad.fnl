@@ -70,8 +70,8 @@
   screen-clients)
 
 (fn get-current-tag []
-    (local screen (awful.screen.focused))
-    (screen.selected_tag))
+  (local screen (awful.screen.focused))
+  (screen.selected_tag))
 
 ;;-- This currently sends to tag 9
 ;; need to see if can implement scratch pad without using a tag
@@ -163,7 +163,7 @@
   )
 
 (fn hide-scratch []
-    ;; Hide scratch pad
+  ;; Hide scratch pad
   ;; Reset the clients without the client from the scratch pad
   (local screen (awful.screen.focused))
   (local stag screen.selected_tag)
@@ -182,18 +182,15 @@
   (set is-visible false))
 
 (fn toggle-scratch []
-
   (log "calling toggle" {})
   (awful.screen.connect_for_each_screen
    (fn [s]
      (log "screen" {:s s :attr s.idx})))
-
   (if (= is-visible false)
       (show-scratch)
       (hide-scratch)))
 
 (set M.send_to_scratch send-to-scratch)
-
 (set M.toggle_scratch toggle-scratch)
 
 M
