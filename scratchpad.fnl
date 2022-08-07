@@ -119,7 +119,7 @@
     (set c.x x)
     (set c.y y)))
 
-(fn show-scratch [c]
+(fn show-scratch []
   (local screen (awful.screen.focused))
   (local stag screen.selected_tag)
 
@@ -173,10 +173,11 @@
   (M.alert "hiding scratchs!!")
   (set is-visible false))
 
-(fn toggle-scratch [c]
+(fn toggle-scratch []
+  (M.alert "calling toggle scratch")
   (if (= is-visible false)
-      (show-scratch c)
-      (hide-scratch c)))
+      (show-scratch)
+      (hide-scratch)))
 
 (set M.send_to_scratch send-to-scratch)
 

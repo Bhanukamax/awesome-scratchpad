@@ -79,7 +79,7 @@ local function set_client_props(c)
   c.y = y
   return nil
 end
-local function show_scratch(c)
+local function show_scratch()
   local screen0 = awful.screen.focused()
   local stag = screen0.selected_tag
   local buf_count = #buf
@@ -112,11 +112,12 @@ local function hide_scratch()
   is_visible = false
   return nil
 end
-local function toggle_scratch(c)
+local function toggle_scratch()
+  M.alert("calling toggle scratch")
   if (is_visible == false) then
-    return show_scratch(c)
+    return show_scratch()
   else
-    return hide_scratch(c)
+    return hide_scratch()
   end
 end
 M.send_to_scratch = send_to_scratch
