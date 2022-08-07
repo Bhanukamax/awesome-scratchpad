@@ -71,7 +71,6 @@ local function send_to_scratch(c)
   return stag:clients(to_keep)
 end
 local is_visible = false
-local last_visible_idx = 0
 local visible_scratch_client = {}
 local current_scratch_idx = 0
 local function set_client_props(c)
@@ -90,17 +89,11 @@ local function show_scratch()
   local stag = screen.selected_tag
   local buf_count = #buf
   local sclients = get_screeen_clietns()
-  if (buf_count > 0) then
-    current_scratch_idx = ((last_visible_idx + 1) % buf_count)
-  else
-  end
   local cs = buf[(current_scratch_idx + 1)]
   table.insert(sclients, cs)
   visible_scratch_client = cs
   stag:clients(sclients)
-  set_client_props(cs)
   is_visible = true
-  last_visible_idx = current_scratch_idx
   return nil
 end
 local function hide_scratch()
@@ -108,13 +101,26 @@ local function hide_scratch()
   local stag = screen.selected_tag
   local sclients = get_screeen_clietns()
   local non_scratch_clients
-  local function _9_(i)
+  local function _8_(i)
     return (i ~= visible_scratch_client)
   end
-  non_scratch_clients = fn_2ffilter(sclients, _9_)
+  non_scratch_clients = fn_2ffilter(sclients, _8_)
   stag:clients(non_scratch_clients)
   is_visible = false
   return nil
+end
+local function cycle()
+  if (is_visible == false) then
+    return show_scratch()
+  else
+    hide_scratch()
+    local buf_count = #buf
+    local new_idx = ((current_scratch_idx + 1) % buf_count)
+    current_scratch_idx = new_idx
+    show_scratch()
+    set_client_props(visible_scratch_client)
+    return M.alert("show shwo next")
+  end
 end
 local function toggle_scratch()
   if (#buf > 0) then
@@ -128,5 +134,6 @@ local function toggle_scratch()
   end
 end
 M.send_to_scratch = send_to_scratch
-M.toggle_scratch = toggle_scratch
+M.toggle = toggle_scratch
+M.cycle = cycle
 return M

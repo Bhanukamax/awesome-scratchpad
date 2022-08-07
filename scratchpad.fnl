@@ -115,7 +115,6 @@
 
 (var is-visible false)
 
-(var last-visible-idx 0)
 (var visible-scratch-client {})
 (var current-scratch-idx 0)
 
@@ -142,20 +141,16 @@
   (local sclients (get-screeen-clietns))
 
 
-  (when (> buf-count 0)
-    (set current-scratch-idx
-         (% (+ last-visible-idx 1) buf-count)))
+ ;; (when (> buf-count 0)
+ ;;    (set current-scratch-idx
+ ;;         (% (+ last-visible-idx 1) buf-count)))
   ;; get the current scratch client
   (local cs (. buf (+ current-scratch-idx 1)))
   (table.insert sclients cs)
   (set visible-scratch-client cs)
-
   (stag:clients sclients)
-  (set-client-props cs)
 
-  (set is-visible true)
-  (set last-visible-idx current-scratch-idx)
-  )
+  (set is-visible true))
 
 (fn hide-scratch []
 
@@ -171,9 +166,20 @@
             (~= i visible-scratch-client))))
 
   (stag:clients non-scratch-clients)
-
-
   (set is-visible false))
+
+(fn cycle []
+  (if (= is-visible false)
+      (show-scratch)
+      (do
+        (hide-scratch)
+        (local buf-count (length buf))
+        (local new-idx
+             (% (+ current-scratch-idx 1) buf-count))
+        (set current-scratch-idx new-idx)
+        (show-scratch)
+        (set-client-props visible-scratch-client)
+        (M.alert "show shwo next"))))
 
 ;; toggle last active scratch pad
 (fn toggle-scratch []
@@ -183,6 +189,7 @@
         (hide-scratch))))
 
 (set M.send_to_scratch send-to-scratch)
-(set M.toggle_scratch toggle-scratch)
+(set M.toggle toggle-scratch)
+(set M.cycle cycle)
 
 M
