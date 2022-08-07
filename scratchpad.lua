@@ -49,6 +49,17 @@ local function get_current_tag()
   local screen = awful.screen.focused()
   return screen.selected_tag()
 end
+local function set_client_props(c)
+  local screen = awful.screen.focused()
+  local w = screen.workarea
+  c.ontop = true
+  c.floating = true
+  c.height = (w.height / 2)
+  c.width = (w.width / 2)
+  c.x = ((w.width / 10) + w.x)
+  c.y = ((w.height / 10) + w.y)
+  return nil
+end
 local function send_to_scratch(c)
   local screen = awful.screen.focused()
   local stag = screen.selected_tag
@@ -58,6 +69,7 @@ local function send_to_scratch(c)
     if (client.focus == cc) then
       if (util["table-has"](buf, cc) == false) then
         table.insert(buf, cc)
+        set_client_props(cc)
         M.alert("sent to scrattch")
       else
       end
@@ -73,17 +85,6 @@ end
 local is_visible = false
 local visible_scratch_client = {}
 local current_scratch_idx = 0
-local function set_client_props(c)
-  local screen = awful.screen.focused()
-  local w = screen.workarea
-  c.ontop = true
-  c.floating = true
-  c.height = (w.height / 2)
-  c.width = (w.width / 2)
-  c.x = ((w.width / 10) + w.x)
-  c.y = ((w.height / 10) + w.y)
-  return nil
-end
 local function sanitize_client_props(c)
   local screen = awful.screen.focused()
   local w = screen.workarea
@@ -131,7 +132,7 @@ local function cycle()
     local new_idx = ((current_scratch_idx + 1) % buf_count)
     current_scratch_idx = new_idx
     show_scratch()
-    set_client_props(visible_scratch_client)
+    sanitize_client_props(visible_scratch_client)
     return M.alert("show shwo next")
   end
 end

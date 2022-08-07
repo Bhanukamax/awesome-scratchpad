@@ -76,6 +76,22 @@
 ;;-- This currently sends to tag 9
 ;; need to see if can implement scratch pad without using a tag
 
+
+
+(fn set-client-props [c]
+  (local screen (awful.screen.focused))
+  (local w screen.workarea)
+
+  (do
+    (set c.ontop true)
+    (set c.floating true)
+    (set c.height (/  w.height 2))
+    (set c.width (/ w.width 2))
+    (set c.x (+ (/ w.width 10) w.x))
+    (set c.y (+ (/ w.height 10)  w.y))))
+
+
+
 (fn send-to-scratch [c]
 
   ;; get the screen tag clients
@@ -96,6 +112,7 @@
         (when (= (util.table-has buf cc) false)
           (do
             (table.insert buf cc)
+            (set-client-props cc)
             (M.alert "sent to scrattch")))
 
         ;; Collect the clients to keep
@@ -117,19 +134,6 @@
 
 (var visible-scratch-client {})
 (var current-scratch-idx 0)
-
-(fn set-client-props [c]
-  (local screen (awful.screen.focused))
-  (local w screen.workarea)
-
-  (do
-    (set c.ontop true)
-    (set c.floating true)
-    (set c.height (/  w.height 2))
-    (set c.width (/ w.width 2))
-    (set c.x (+ (/ w.width 10) w.x))
-    (set c.y (+ (/ w.height 10)  w.y))))
-
 
 
 (fn sanitize-client-props [c]
@@ -202,7 +206,8 @@
              (% (+ current-scratch-idx 1) buf-count))
         (set current-scratch-idx new-idx)
         (show-scratch)
-        (set-client-props visible-scratch-client)
+;;        (set-client-props visible-scratch-client)
+        (sanitize-client-props visible-scratch-client)
         (M.alert "show shwo next"))))
 
 ;; toggle last active scratch pad
