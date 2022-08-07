@@ -128,23 +128,24 @@
 
 (set M.sanitize-client-props
      (fn [c]
-       (local screen (awful.screen.focused))
-       (local w screen.workarea)
-       (set c.ontop true)
-       (set c.focused true)
-       (set c.floating true)
+       (when c
+         (local screen (awful.screen.focused))
+         (local w screen.workarea)
+         (set c.ontop true)
+         (set c.focused true)
+         (set c.floating true)
 
-       (when
-           (or (< c.y w.y)
-               (> c.y (+ w.y w.height))
-               (> (+ c.x c.width) (+ w.y w.width))
-               (> (+ c.y c.height) (+ w.y w.height))
-               )
-         (do
-           (set c.height (/  w.height 2))
-           (set c.width (/ w.width 2))
-           (set c.x (+ (/ w.width 10) w.x))
-           (set c.y (+ (/ w.height 10)  w.y))))))
+         (when
+             (or (< c.y w.y)
+                 (> c.y (+ w.y w.height))
+                 (> (+ c.x c.width) (+ w.y w.width))
+                 (> (+ c.y c.height) (+ w.y w.height))
+                 )
+           (do
+             (set c.height (/  w.height 2))
+             (set c.width (/ w.width 2))
+             (set c.x (+ (/ w.width 10) w.x))
+             (set c.y (+ (/ w.height 10)  w.y)))))))
 
 (set M.show-scratch
      (fn []

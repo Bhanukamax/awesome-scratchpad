@@ -116,23 +116,27 @@ local function _15_(c)
 end
 M["toggle-send"] = _15_
 local function _17_(c)
-  local screen = awful.screen.focused()
-  local w = screen.workarea
-  c.ontop = true
-  c.focused = true
-  c.floating = true
-  if ((c.y < w.y) or (c.y > (w.y + w.height)) or ((c.x + c.width) > (w.y + w.width)) or ((c.y + c.height) > (w.y + w.height))) then
-    c.height = (w.height / 2)
-    c.width = (w.width / 2)
-    c.x = ((w.width / 10) + w.x)
-    c.y = ((w.height / 10) + w.y)
-    return nil
+  if c then
+    local screen = awful.screen.focused()
+    local w = screen.workarea
+    c.ontop = true
+    c.focused = true
+    c.floating = true
+    if ((c.y < w.y) or (c.y > (w.y + w.height)) or ((c.x + c.width) > (w.y + w.width)) or ((c.y + c.height) > (w.y + w.height))) then
+      c.height = (w.height / 2)
+      c.width = (w.width / 2)
+      c.x = ((w.width / 10) + w.x)
+      c.y = ((w.height / 10) + w.y)
+      return nil
+    else
+      return nil
+    end
   else
     return nil
   end
 end
 M["sanitize-client-props"] = _17_
-local function _19_()
+local function _20_()
   local screen = awful.screen.focused()
   local stag = screen.selected_tag
   local buf_count = #buf
@@ -146,22 +150,22 @@ local function _19_()
   client.focus = cs
   return nil
 end
-M["show-scratch"] = _19_
-local function _20_()
+M["show-scratch"] = _20_
+local function _21_()
   local screen = awful.screen.focused()
   local stag = screen.selected_tag
   local sclients = M["get-screeen-clients"]()
   local non_scratch_clients
-  local function _21_(i)
+  local function _22_(i)
     return (i ~= visible_scratch_client)
   end
-  non_scratch_clients = fn_2ffilter(sclients, _21_)
+  non_scratch_clients = fn_2ffilter(sclients, _22_)
   stag:clients(non_scratch_clients)
   is_visible = false
   return nil
 end
-M["hide-scratch"] = _20_
-local function _22_()
+M["hide-scratch"] = _21_
+local function _23_()
   if (#buf > 0) then
     if (is_visible == false) then
       return M["show-scratch"]()
@@ -178,8 +182,8 @@ local function _22_()
     return nil
   end
 end
-M.cycle = _22_
-local function _25_()
+M.cycle = _23_
+local function _26_()
   if (#buf > 0) then
     if (is_visible == false) then
       return M["show-scratch"]()
@@ -190,7 +194,7 @@ local function _25_()
     return nil
   end
 end
-M["toggle-scratch"] = _25_
+M["toggle-scratch"] = _26_
 M.send_to_scratch = M["send-to-scratch"]
 M.toggle = M["toggle-scratch"]
 M.toggle_send = M["toggle-send"]
