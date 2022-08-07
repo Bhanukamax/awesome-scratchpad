@@ -84,6 +84,19 @@ local function set_client_props(c)
   c.y = ((w.height / 10) + w.y)
   return nil
 end
+local function sanitize_client_props(c)
+  local screen = awful.screen.focused()
+  local w = screen.workarea
+  if ((c.y < w.y) or (c.y > (w.y + w.height))) then
+    c.ontop = true
+    c.floating = true
+    c.x = ((w.width / 10) + w.x)
+    c.y = ((w.height / 10) + w.y)
+    return nil
+  else
+    return nil
+  end
+end
 local function show_scratch()
   local screen = awful.screen.focused()
   local stag = screen.selected_tag
@@ -94,17 +107,17 @@ local function show_scratch()
   visible_scratch_client = cs
   stag:clients(sclients)
   is_visible = true
-  return nil
+  return sanitize_client_props(cs)
 end
 local function hide_scratch()
   local screen = awful.screen.focused()
   local stag = screen.selected_tag
   local sclients = get_screeen_clietns()
   local non_scratch_clients
-  local function _8_(i)
+  local function _9_(i)
     return (i ~= visible_scratch_client)
   end
-  non_scratch_clients = fn_2ffilter(sclients, _8_)
+  non_scratch_clients = fn_2ffilter(sclients, _9_)
   stag:clients(non_scratch_clients)
   is_visible = false
   return nil
