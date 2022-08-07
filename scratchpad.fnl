@@ -136,9 +136,9 @@
 (fn sanitize-client-props [c]
   (local screen (awful.screen.focused))
   (local w screen.workarea)
-      (set c.ontop true)
-      (set c.focused true)
-      (set c.floating true)
+  (set c.ontop true)
+  (set c.focused true)
+  (set c.floating true)
 
   (when
       (or (< c.y w.y)
@@ -150,8 +150,7 @@
       (set c.height (/  w.height 2))
       (set c.width (/ w.width 2))
       (set c.x (+ (/ w.width 10) w.x))
-      (set c.y (+ (/ w.height 10)  w.y))))
-  )
+      (set c.y (+ (/ w.height 10)  w.y)))))
 
 
 
@@ -166,9 +165,9 @@
   (local sclients (get-screeen-clietns))
 
 
- ;; (when (> buf-count 0)
- ;;    (set current-scratch-idx
- ;;         (% (+ last-visible-idx 1) buf-count)))
+  ;; (when (> buf-count 0)
+  ;;    (set current-scratch-idx
+  ;;         (% (+ last-visible-idx 1) buf-count)))
   ;; get the current scratch client
   (local cs (. buf (+ current-scratch-idx 1)))
   (table.insert sclients cs)
@@ -203,10 +202,10 @@
         (hide-scratch)
         (local buf-count (length buf))
         (local new-idx
-             (% (+ current-scratch-idx 1) buf-count))
+               (% (+ current-scratch-idx 1) buf-count))
         (set current-scratch-idx new-idx)
         (show-scratch)
-;;        (set-client-props visible-scratch-client)
+        ;;        (set-client-props visible-scratch-client)
         (sanitize-client-props visible-scratch-client)
         (M.alert "show shwo next"))))
 
