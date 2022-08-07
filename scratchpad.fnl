@@ -7,6 +7,11 @@
       (table.insert new-arr value)))
   new-arr)
 
+
+
+
+
+
 (local awful (require :awful))
 (local naughty (require :naughty))
 
@@ -18,6 +23,9 @@
 ;; Global State
 (var active-sp-idx 0)
 (var is-sp-visible false)
+(var is-visible false)
+(var visible-scratch-client {})
+(var current-scratch-idx 0)
 
 ;; TODO: move this to a seperate module
 (local util {})
@@ -53,6 +61,11 @@
   (local stag screen.selected_tag)
   (local screen-clients (stag:clients))
   screen-clients)
+
+
+(fn remove-scratch-props [c]
+  (set c.floating false)
+  (set c.ontop false))
 
 (fn set-client-props [c]
   (local screen (awful.screen.focused))
@@ -98,11 +111,18 @@
   ;; Set the clientsforthe curreent tags from to-keep table
   (stag:clients to-keep))
 
-(var is-visible false)
+(fn remove-client-from-scratch [c]
+  (local new-buf (fn/filter buf (fn [i] (~= i c))))
+  (set buf new-buf)
+  (remove-scratch-props c)
 
-(var visible-scratch-client {})
-(var current-scratch-idx 0)
+  )
 
+(fn toggle-send [c]
+  (local buf-has-client (table-has buf c))
+  (if (= buf-has-client true)
+      (remove-client-from-scratch c)
+      (send-to-scratch c)))
 
 (fn sanitize-client-props [c]
   (local screen (awful.screen.focused))
@@ -122,7 +142,6 @@
       (set c.width (/ w.width 2))
       (set c.x (+ (/ w.width 10) w.x))
       (set c.y (+ (/ w.height 10)  w.y)))))
-
 
 
 (fn show-scratch []
@@ -183,7 +202,10 @@
         (hide-scratch))))
 
 (set M.send_to_scratch send-to-scratch)
+
+
 (set M.toggle toggle-scratch)
 (set M.cycle cycle)
+(set M.toggle_send toggle-send)
 
 M

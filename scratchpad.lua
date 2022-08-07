@@ -14,6 +14,9 @@ local inspect = require("inspect")
 local M = {}
 local active_sp_idx = 0
 local is_sp_visible = false
+local is_visible = false
+local visible_scratch_client = {}
+local current_scratch_idx = 0
 local util = {}
 local table_has
 local function _2_(tabel, pin)
@@ -44,6 +47,11 @@ local function get_screeen_clients()
   local stag = screen.selected_tag
   local screen_clients = stag:clients()
   return screen_clients
+end
+local function remove_scratch_props(c)
+  c.floating = false
+  c.ontop = false
+  return nil
 end
 local function set_client_props(c)
   local screen = awful.screen.focused()
@@ -78,9 +86,23 @@ local function send_to_scratch(c)
   end
   return stag:clients(to_keep)
 end
-local is_visible = false
-local visible_scratch_client = {}
-local current_scratch_idx = 0
+local function remove_client_from_scratch(c)
+  local new_buf
+  local function _8_(i)
+    return (i ~= c)
+  end
+  new_buf = fn_2ffilter(buf, _8_)
+  buf = new_buf
+  return remove_scratch_props(c)
+end
+local function toggle_send(c)
+  local buf_has_client = table_has(buf, c)
+  if (buf_has_client == true) then
+    return remove_client_from_scratch(c)
+  else
+    return send_to_scratch(c)
+  end
+end
 local function sanitize_client_props(c)
   local screen = awful.screen.focused()
   local w = screen.workarea
@@ -116,10 +138,10 @@ local function hide_scratch()
   local stag = screen.selected_tag
   local sclients = get_screeen_clients()
   local non_scratch_clients
-  local function _9_(i)
+  local function _11_(i)
     return (i ~= visible_scratch_client)
   end
-  non_scratch_clients = fn_2ffilter(sclients, _9_)
+  non_scratch_clients = fn_2ffilter(sclients, _11_)
   stag:clients(non_scratch_clients)
   is_visible = false
   return nil
@@ -151,4 +173,5 @@ end
 M.send_to_scratch = send_to_scratch
 M.toggle = toggle_scratch
 M.cycle = cycle
+M.toggle_send = toggle_send
 return M
