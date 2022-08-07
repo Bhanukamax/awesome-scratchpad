@@ -114,8 +114,9 @@
        (local new-buf (fn/filter buf (fn [i] (~= i c))))
        (set buf new-buf)
        (M.remove-scratch-props c)
-       (M.show-scratch)
-       (M.hide-scratch)
+       (when (> (length buf) 0)
+         (M.show-scratch)
+         (M.hide-scratch))
        ))
 
 (set M.toggle-send
