@@ -68,8 +68,7 @@ local function send_to_scratch(c)
       end
     end
   end
-  stag:clients(to_keep)
-  return M.alert({msg = "to-keep", ["to-keep"] = to_keep, sent = buf})
+  return stag:clients(to_keep)
 end
 local is_visible = false
 local last_visible_idx = 0
@@ -78,7 +77,6 @@ local current_scratch_idx = 0
 local function set_client_props(c)
   local screen = awful.screen.focused()
   local w = screen.workarea
-  M.alert({msg = "workarea", w = w})
   c.ontop = true
   c.floating = true
   c.height = (w.height / 2)
@@ -89,7 +87,6 @@ local function set_client_props(c)
 end
 local function show_scratch()
   local screen = awful.screen.focused()
-  M.alert(screen)
   local stag = screen.selected_tag
   local buf_count = #buf
   local sclients = get_screeen_clietns()
@@ -97,7 +94,6 @@ local function show_scratch()
     current_scratch_idx = ((last_visible_idx + 1) % buf_count)
   else
   end
-  M.alert({["curretn-idx"] = current_scratch_idx, msg = "showing", clients = sclients, scratch = buf, visible = visible_scratch_client})
   local cs = buf[(current_scratch_idx + 1)]
   table.insert(sclients, cs)
   visible_scratch_client = cs
@@ -117,12 +113,10 @@ local function hide_scratch()
   end
   non_scratch_clients = fn_2ffilter(sclients, _9_)
   stag:clients(non_scratch_clients)
-  M.alert("hiding scratchs!!")
   is_visible = false
   return nil
 end
 local function toggle_scratch()
-  M.alert("calling toggle scratch")
   log("calling toggle", {})
   local function _10_(s)
     return log("screen", {s = s, attr = s.idx})

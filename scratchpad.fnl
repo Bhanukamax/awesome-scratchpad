@@ -106,7 +106,7 @@
   ;; Set the clientsforthe curreent tags from to-keep table
   (stag:clients to-keep)
 
-  (M.alert {:msg :to-keep :to-keep to-keep :sent buf}) )
+  )
 
 ;; Toggles on and off the scratch pad tag (tag 9)
 ;; Reason Unknown Caveatts:
@@ -122,7 +122,7 @@
 (fn set-client-props [c]
   (local screen (awful.screen.focused))
   (local w screen.workarea)
-  (M.alert {:msg "workarea" :w w})
+
   (do
     (set c.ontop true)
     (set c.floating true)
@@ -135,7 +135,6 @@
 
 
   (local screen (awful.screen.focused))
-  (M.alert screen)
 
   (local stag screen.selected_tag)
 
@@ -147,13 +146,6 @@
     (set current-scratch-idx
          (% (+ last-visible-idx 1) buf-count)))
   ;; get the current scratch client
-  (M.alert {
-            :curretn-idx current-scratch-idx
-            :msg :showing
-            :clients sclients
-            :scratch buf
-            :visible visible-scratch-client
-            })
   (local cs (. buf (+ current-scratch-idx 1)))
   (table.insert sclients cs)
   (set visible-scratch-client cs)
@@ -186,26 +178,19 @@
 
   (stag:clients non-scratch-clients)
 
-  (M.alert "hiding scratchs!!")
+
   (set is-visible false))
 
 (fn toggle-scratch []
-  (M.alert "calling toggle scratch")
+
   (log "calling toggle" {})
   (awful.screen.connect_for_each_screen
    (fn [s]
      (log "screen" {:s s :attr s.idx})))
 
-
-;;  (M.alert {:msg :screens :s awful.screen})
-
-  ;; (each [key value (pairs awful.screen)]
-  ;;   (M.alert {:msg "showing screens" :value value :key key}))
-
-
-
-  (if (= is-visible false) (show-scratch) (hide-scratch))
-  )
+  (if (= is-visible false)
+      (show-scratch)
+      (hide-scratch)))
 
 (set M.send_to_scratch send-to-scratch)
 
