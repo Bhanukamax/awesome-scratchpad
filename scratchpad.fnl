@@ -153,18 +153,12 @@
   (stag:clients sclients)
   (set-client-props cs)
 
-
-  ;; Show scratch pad
-  ;; get all the clietns of the current tag
-  ;; add the first cient from the scratchpad to clietn tag
-  ;; - reset the tags for ctag with the new clietn included
   (set is-visible true)
   (set last-visible-idx current-scratch-idx)
   )
 
 (fn hide-scratch []
-  ;; Hide scratch pad
-  ;; Reset the clients without the client from the scratch pad
+
   (local screen (awful.screen.focused))
   (local stag screen.selected_tag)
 
@@ -181,14 +175,12 @@
 
   (set is-visible false))
 
+;; toggle last active scratch pad
 (fn toggle-scratch []
-  (log "calling toggle" {})
-  (awful.screen.connect_for_each_screen
-   (fn [s]
-     (log "screen" {:s s :attr s.idx})))
-  (if (= is-visible false)
-      (show-scratch)
-      (hide-scratch)))
+  (when (> (length buf) 0)
+    (if (= is-visible false)
+        (show-scratch)
+        (hide-scratch))))
 
 (set M.send_to_scratch send-to-scratch)
 (set M.toggle_scratch toggle-scratch)

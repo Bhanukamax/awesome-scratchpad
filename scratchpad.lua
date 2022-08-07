@@ -117,15 +117,14 @@ local function hide_scratch()
   return nil
 end
 local function toggle_scratch()
-  log("calling toggle", {})
-  local function _10_(s)
-    return log("screen", {s = s, attr = s.idx})
-  end
-  awful.screen.connect_for_each_screen(_10_)
-  if (is_visible == false) then
-    return show_scratch()
+  if (#buf > 0) then
+    if (is_visible == false) then
+      return show_scratch()
+    else
+      return hide_scratch()
+    end
   else
-    return hide_scratch()
+    return nil
   end
 end
 M.send_to_scratch = send_to_scratch
