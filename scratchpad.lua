@@ -77,7 +77,6 @@ local function _8_(c)
       if (util["table-has"](buf, cc) == false) then
         table.insert(buf, cc)
         M["set-client-props"](cc)
-        M.alert("sent to scrattch")
       else
       end
     else
@@ -175,8 +174,7 @@ local function _23_()
       local new_idx = ((current_scratch_idx + 1) % buf_count)
       current_scratch_idx = new_idx
       M["show-scratch"]()
-      M["sanitize-client-props"](visible_scratch_client)
-      return M.alert("show shwo next")
+      return M["sanitize-client-props"](visible_scratch_client)
     end
   else
     return nil
