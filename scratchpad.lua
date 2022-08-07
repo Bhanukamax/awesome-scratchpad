@@ -45,10 +45,6 @@ local function get_screeen_clietns()
   local screen_clients = stag:clients()
   return screen_clients
 end
-local function get_current_tag()
-  local screen = awful.screen.focused()
-  return screen.selected_tag()
-end
 local function set_client_props(c)
   local screen = awful.screen.focused()
   local w = screen.workarea

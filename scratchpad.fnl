@@ -9,9 +9,9 @@
 
 (local awful (require :awful))
 (local naughty (require :naughty))
+
 ;; Inspect copied from neovim
 (local inspect (require :inspect))
-;;(local screen (awful.screen.focused))
 
 (local M {})
 
@@ -46,22 +46,13 @@
        (naughty.notify {:text (inspect
                                {:tbl tbl})})))
 
-
 (var buf [])
-
 
 (fn get-screeen-clietns []
   (local screen (awful.screen.focused))
   (local stag screen.selected_tag)
   (local screen-clients (stag:clients))
   screen-clients)
-
-(fn get-current-tag []
-  (local screen (awful.screen.focused))
-  (screen.selected_tag))
-
-;;-- This currently sends to tag 9
-;; need to see if can implement scratch pad without using a tag
 
 (fn set-client-props [c]
   (local screen (awful.screen.focused))
@@ -151,11 +142,6 @@
   (local buf-count (length buf))
   (local sclients (get-screeen-clietns))
 
-
-  ;; (when (> buf-count 0)
-  ;;    (set current-scratch-idx
-  ;;         (% (+ last-visible-idx 1) buf-count)))
-  ;; get the current scratch client
   (local cs (. buf (+ current-scratch-idx 1)))
   (table.insert sclients cs)
   (set visible-scratch-client cs)
@@ -163,9 +149,7 @@
 
   (set is-visible true)
   (sanitize-client-props cs)
-  (set client.focus cs)
-
-  )
+  (set client.focus cs))
 
 (fn hide-scratch []
 
