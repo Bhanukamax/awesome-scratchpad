@@ -98,8 +98,7 @@
              (when (= (util.table-has buf cc) false)
                (do
                  (table.insert buf cc)
-                 (M.set-client-props cc)
-                 (M.alert "sent to scrattch")))
+                 (M.set-client-props cc)))
 
              ;; Collect the clients to keep
              (do
@@ -197,8 +196,7 @@
                (set current-scratch-idx new-idx)
                (M.show-scratch)
                ;;        (M.set-client-props visible-scratch-client)
-               (M.sanitize-client-props visible-scratch-client)
-               (M.alert "show shwo next"))))))
+               (M.sanitize-client-props visible-scratch-client))))))
 
 ;; toggle last active scratch pad
 (set M.toggle-scratch
