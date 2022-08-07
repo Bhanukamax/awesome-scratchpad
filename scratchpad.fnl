@@ -183,19 +183,21 @@
        (set is-visible false)))
 
 (set M.cycle
+
      (fn []
-       (if (= is-visible false)
-           (M.show-scratch)
-           (do
-             (M.hide-scratch)
-             (local buf-count (length buf))
-             (local new-idx
-                    (% (+ current-scratch-idx 1) buf-count))
-             (set current-scratch-idx new-idx)
+       (when (> (length buf) 0)
+         (if (= is-visible false)
              (M.show-scratch)
-             ;;        (M.set-client-props visible-scratch-client)
-             (M.sanitize-client-props visible-scratch-client)
-             (M.alert "show shwo next")))))
+             (do
+               (M.hide-scratch)
+               (local buf-count (length buf))
+               (local new-idx
+                      (% (+ current-scratch-idx 1) buf-count))
+               (set current-scratch-idx new-idx)
+               (M.show-scratch)
+               ;;        (M.set-client-props visible-scratch-client)
+               (M.sanitize-client-props visible-scratch-client)
+               (M.alert "show shwo next"))))))
 
 ;; toggle last active scratch pad
 (set M.toggle-scratch

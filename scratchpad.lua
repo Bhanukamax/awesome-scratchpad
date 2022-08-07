@@ -162,20 +162,24 @@ local function _20_()
 end
 M["hide-scratch"] = _20_
 local function _22_()
-  if (is_visible == false) then
-    return M["show-scratch"]()
+  if (#buf > 0) then
+    if (is_visible == false) then
+      return M["show-scratch"]()
+    else
+      M["hide-scratch"]()
+      local buf_count = #buf
+      local new_idx = ((current_scratch_idx + 1) % buf_count)
+      current_scratch_idx = new_idx
+      M["show-scratch"]()
+      M["sanitize-client-props"](visible_scratch_client)
+      return M.alert("show shwo next")
+    end
   else
-    M["hide-scratch"]()
-    local buf_count = #buf
-    local new_idx = ((current_scratch_idx + 1) % buf_count)
-    current_scratch_idx = new_idx
-    M["show-scratch"]()
-    M["sanitize-client-props"](visible_scratch_client)
-    return M.alert("show shwo next")
+    return nil
   end
 end
 M.cycle = _22_
-local function _24_()
+local function _25_()
   if (#buf > 0) then
     if (is_visible == false) then
       return M["show-scratch"]()
@@ -186,7 +190,7 @@ local function _24_()
     return nil
   end
 end
-M["toggle-scratch"] = _24_
+M["toggle-scratch"] = _25_
 M.send_to_scratch = M["send-to-scratch"]
 M.toggle = M["toggle-scratch"]
 M.toggle_send = M["toggle-send"]
