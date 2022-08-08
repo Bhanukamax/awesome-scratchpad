@@ -23,13 +23,13 @@ your `rc.lua` or you home directory `~`
 
     -- Put these some where you put you keybinding
     -- Send or take back client from scratchpad
-    awful.key({ modkey,           }, "-", scratch_pad.toggle_send,
+    awful.key({ modkey,           }, "-", scratchpad.toggle_send,
         {description = "Send to scratch pad", group = "Scratchpad"}),
     -- Toggle the last scratchpad on and off
-    awful.key({ modkey,           }, "=", scratch_pad.toggle,
+    awful.key({ modkey,           }, "=", scratchpad.toggle,
         {description = "Toggle Scratch pad", group = "Scratchpad"}),
     -- Cycle through all the avaialable scratchpads
-    awful.key({ modkey, "Control" }, "=", scratch_pad.cycle,
+    awful.key({ modkey, "Control" }, "=", scratchpad.cycle,
         {description = "Cycle Scratch pad", group = "Scratchpad"})
 
 
