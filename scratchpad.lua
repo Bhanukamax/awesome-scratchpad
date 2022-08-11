@@ -50,6 +50,7 @@ local function _5_()
 end
 M["get-screeen-clients"] = _5_
 local function _6_(c)
+  c.sticky = false
   c.floating = false
   c.ontop = false
   return nil
@@ -90,13 +91,22 @@ local function _8_(c)
 end
 M["send-to-scratch"] = _8_
 local function _12_(c)
+  local screen = awful.screen.focused()
+  local stag = screen.selected_tag
+  local sclients = M["get-screeen-clients"]()
+  table.insert(sclients, cs)
+  return stag:clients(sclients)
+end
+M["add-client-to-current-tag"] = _12_
+local function _13_(c)
   local new_buf
-  local function _13_(i)
+  local function _14_(i)
     return (i ~= c)
   end
-  new_buf = fn_2ffilter(buf, _13_)
+  new_buf = fn_2ffilter(buf, _14_)
   buf = new_buf
   M["remove-scratch-props"](c)
+  M["add-client-to-current-tag"](c)
   if (#buf > 0) then
     M["show-scratch"]()
     return M["hide-scratch"]()
@@ -104,8 +114,8 @@ local function _12_(c)
     return nil
   end
 end
-M["remove-client-from-scratch"] = _12_
-local function _15_(c)
+M["remove-client-from-scratch"] = _13_
+local function _16_(c)
   local buf_has_client = table_has(buf, c)
   if (buf_has_client == true) then
     return M["remove-client-from-scratch"](c)
@@ -113,8 +123,8 @@ local function _15_(c)
     return M["send-to-scratch"](c)
   end
 end
-M["toggle-send"] = _15_
-local function _17_(c)
+M["toggle-send"] = _16_
+local function _18_(c)
   if c then
     local screen = awful.screen.focused()
     local w = screen.workarea
@@ -134,8 +144,8 @@ local function _17_(c)
     return nil
   end
 end
-M["sanitize-client-props"] = _17_
-local function _20_()
+M["sanitize-client-props"] = _18_
+local function _21_()
   local screen = awful.screen.focused()
   local stag = screen.selected_tag
   local buf_count = #buf
@@ -143,28 +153,28 @@ local function _20_()
   local cs = buf[(current_scratch_idx + 1)]
   table.insert(sclients, cs)
   visible_scratch_client = cs
-  stag:clients(sclients)
+  cs.sticky = true
   is_visible = true
   M["sanitize-client-props"](cs)
   client.focus = cs
   return nil
 end
-M["show-scratch"] = _20_
-local function _21_()
+M["show-scratch"] = _21_
+local function _22_()
   local screen = awful.screen.focused()
   local stag = screen.selected_tag
   local sclients = M["get-screeen-clients"]()
   local non_scratch_clients
-  local function _22_(i)
+  local function _23_(i)
     return (i ~= visible_scratch_client)
   end
-  non_scratch_clients = fn_2ffilter(sclients, _22_)
-  stag:clients(non_scratch_clients)
+  non_scratch_clients = fn_2ffilter(sclients, _23_)
+  visible_scratch_client.sticky = false
   is_visible = false
   return nil
 end
-M["hide-scratch"] = _21_
-local function _23_()
+M["hide-scratch"] = _22_
+local function _24_()
   if (#buf > 0) then
     if (is_visible == false) then
       return M["show-scratch"]()
@@ -180,8 +190,8 @@ local function _23_()
     return nil
   end
 end
-M.cycle = _23_
-local function _26_()
+M.cycle = _24_
+local function _27_()
   if (#buf > 0) then
     if (is_visible == false) then
       return M["show-scratch"]()
@@ -192,7 +202,7 @@ local function _26_()
     return nil
   end
 end
-M["toggle-scratch"] = _26_
+M["toggle-scratch"] = _27_
 M.send_to_scratch = M["send-to-scratch"]
 M.toggle = M["toggle-scratch"]
 M.toggle_send = M["toggle-send"]

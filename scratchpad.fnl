@@ -60,6 +60,7 @@
 
 (set M.remove-scratch-props
      (fn [c]
+       (set c.sticky false)
        (set c.floating false)
        (set c.ontop false)))
 
@@ -108,11 +109,20 @@
        ;; Set the clientsforthe curreent tags from to-keep table
        (stag:clients to-keep)))
 
+(set M.add-client-to-current-tag
+     (fn [c]
+       (local screen (awful.screen.focused))
+       (local stag screen.selected_tag)
+       (local sclients (M.get-screeen-clients))
+       (table.insert sclients cs)
+       (stag:clients sclients)))
+
 (set M.remove-client-from-scratch
      (fn  [c]
        (local new-buf (fn/filter buf (fn [i] (~= i c))))
        (set buf new-buf)
        (M.remove-scratch-props c)
+       (M.add-client-to-current-tag c)
        (when (> (length buf) 0)
          (M.show-scratch)
          (M.hide-scratch))
@@ -158,7 +168,8 @@
        (local cs (. buf (+ current-scratch-idx 1)))
        (table.insert sclients cs)
        (set visible-scratch-client cs)
-       (stag:clients sclients)
+       (set cs.sticky true)
+;;       (stag:clients sclients)
 
        (set is-visible true)
        (M.sanitize-client-props cs)
@@ -178,7 +189,8 @@
                (fn [i]
                  (~= i visible-scratch-client))))
 
-       (stag:clients non-scratch-clients)
+;;       (stag:clients non-scratch-clients)
+       (set visible-scratch-client.sticky false)
 
        (set is-visible false)))
 
